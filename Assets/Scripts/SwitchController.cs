@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class SwitchController : MonoBehaviour
 {
-    
-
     private enum SwitchState
     {
         Off,
@@ -40,13 +38,11 @@ public class SwitchController : MonoBehaviour
         if (active)
         {
             _state = SwitchState.On;
-            _renderer.material = _onMaterial;
             StopAllCoroutines();
         }
         else
         {
             _state = SwitchState.Off;
-            _renderer.material = _offMaterial;
             StartCoroutine(BlinkTimerStart(5));
         }
         _renderer.material = active? _onMaterial: _offMaterial;
