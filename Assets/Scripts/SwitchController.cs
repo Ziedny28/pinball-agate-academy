@@ -1,14 +1,21 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SwitchController : MonoBehaviour
 {
+    
+
+    private enum SwitchState
+    {
+        Off,
+        On,
+        Blink
+    }
     [SerializeField] private Collider _bola;
     [SerializeField] private Material _offMaterial;
     [SerializeField] private Material _onMaterial;
 
-    private bool _isOn;
+    private SwitchState _state;
     private Renderer _renderer;
 
     // Start is called before the first frame update
@@ -16,19 +23,67 @@ public class SwitchController : MonoBehaviour
     {
         _renderer = GetComponent<Renderer>();
         SetSwitch(false);
+
+        StartCoroutine(BlinkTimerStart(5));
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if(other == _bola)
         {
-            SetSwitch(!_isOn);
+            Toggle();
         }
     }
 
     private void SetSwitch(bool active)
     {
-        _isOn = active;
+        if (active)
+        {
+            _state = SwitchState.On;
+            _renderer.material = _onMaterial;
+            StopAllCoroutines();
+        }
+        else
+        {
+            _state = SwitchState.Off;
+            _renderer.material = _offMaterial;
+            StartCoroutine(BlinkTimerStart(5));
+        }
         _renderer.material = active? _onMaterial: _offMaterial;
+    }
+
+    private void Toggle()
+    {
+        if(_state == SwitchState.On)
+        {
+            SetSwitch(false);
+        }
+        else
+        {
+            SetSwitch(true);
+        }
+    }
+
+    private IEnumerator Blink(int times)
+    {
+        _state = SwitchState.Blink;
+
+        for (int i = 0; i < times; i++)
+        {
+            _renderer.material = _onMaterial;
+            yield return new WaitForSeconds(0.5f);
+            _renderer.material = _offMaterial;
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        _state = SwitchState.Off;
+
+        StartCoroutine(BlinkTimerStart(5));
+    }
+
+    private IEnumerator BlinkTimerStart(float time)
+    {
+        yield return new WaitForSeconds(time);
+        StartCoroutine(Blink(2));
     }
 }
