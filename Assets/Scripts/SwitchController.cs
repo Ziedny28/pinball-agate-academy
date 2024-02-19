@@ -9,6 +9,10 @@ public class SwitchController : MonoBehaviour
         On,
         Blink
     }
+
+    [SerializeField] private float _score;
+
+    [SerializeField] private ScoreManager _scoreManager;
     [SerializeField] private Collider _bola;
     [SerializeField] private Material _offMaterial;
     [SerializeField] private Material _onMaterial;
@@ -58,6 +62,7 @@ public class SwitchController : MonoBehaviour
         {
             SetSwitch(true);
         }
+        _scoreManager.AddScore(_score);
     }
 
     private IEnumerator Blink(int times)
