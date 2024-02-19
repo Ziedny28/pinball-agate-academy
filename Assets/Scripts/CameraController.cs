@@ -1,14 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class CameraController : MonoBehaviour
 {
-    [SerializeField] private Transform _dummyTarget;
-    [SerializeField] private float _dummyLength = 6;
-
+    [SerializeField] private float _returnTime = 1;
+    [SerializeField] private float _followSpeed = 1;
+    [SerializeField] private float _length = 5;
     private Vector3 _defaultPosition;
-    private Transform _target;
+    [SerializeField] private Transform _target;
+    public bool HasTarget { get { return _target != null;  } }
 
     // Start is called before the first frame update
     void Start()
@@ -19,32 +21,30 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKey(KeyCode.Space))
+        if (HasTarget)
         {
-            FocusAtTarget(_dummyTarget,_dummyLength);
+            //kalkulasi posisi u/ fokus ke target
+            Vector3 targetToCameraDirection = transform.rotation * -Vector3.forward;
+            Vector3 targetPosition = _target.position + (targetToCameraDirection * _length);
+            transform.position = Vector3.Lerp(transform.position, targetPosition, _followSpeed * Time.deltaTime);
         }
-        if (Input.GetKey(KeyCode.R))
-        {
-            GoBackToDefault();
-        }
+       
     }
 
-    private void FocusAtTarget(Transform targetTransform, float length)
+    public void FollowTarget(Transform targetTransform, float length)
     {
+        StopAllCoroutines();
         _target = targetTransform;
-
-        //kalkulasi posisi u/ fokus ke target
-        Vector3 targetToCameraDirection = transform.rotation * -Vector3.forward;
-        Vector3 targetPosition = targetTransform.position + (targetToCameraDirection *length);
-
-        //gerakan ke posisi tersebut
-        StartCoroutine(MoveToPosition(targetPosition, 5));
+        _length = length;
     }
 
-    private void GoBackToDefault()
+    public void GoBackToDefault()
     {
         _target = null; 
-        StartCoroutine(MoveToPosition(_defaultPosition, 5));
+
+        //gerakkan ke posisi default dalam waktu return time
+        StopAllCoroutines();
+        StartCoroutine(MoveToPosition(_defaultPosition, _returnTime));
     }
 
     private IEnumerator MoveToPosition(Vector3 target, float time)
