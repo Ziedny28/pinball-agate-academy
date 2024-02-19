@@ -5,6 +5,8 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
     [SerializeField] private AudioSource _bgmSorce;
+    [SerializeField] private GameObject _sfxSource;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -16,8 +18,8 @@ public class AudioManager : MonoBehaviour
         _bgmSorce.Play();
     }
 
-    private void PlaySFX()
+    public void PlaySFX(Vector3 spawnPosition)
     {
-
+        Instantiate(_sfxSource, spawnPosition, Quaternion.identity);
     }
 }

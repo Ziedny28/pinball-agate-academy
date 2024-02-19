@@ -7,9 +7,11 @@ public class BumperController : MonoBehaviour
     [SerializeField] private Collider _bola;
     [SerializeField] private float _multiplier = 3f;
     [SerializeField] private Color _color;
+    [SerializeField] private AudioManager _audioManager;
+    [SerializeField] private VFXManager _vfxManager;
 
-    [SerializeField] private Renderer _renderer;
-    [SerializeField] private Animator _animator;
+    private Animator _animator;
+    private Renderer _renderer;
 
     private void Start()
     {
@@ -27,6 +29,8 @@ public class BumperController : MonoBehaviour
             bolaRig.velocity *= _multiplier;
 
             _animator.SetTrigger("hit");
+            _audioManager.PlaySFX(collision.transform.position);
+            _vfxManager.PlayVFX(collision.transform.position);
         }    
     }
 }
